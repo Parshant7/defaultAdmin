@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ContentService } from './content.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from 'src/config/multer.config';
@@ -18,13 +18,13 @@ export class ContentController {
     @Post() //add content
     @UseInterceptors(FileInterceptor('image', multerOptions))
     async addContent(@Body() body: ContentDto, @UploadedFile() image: Express.Multer.File){
-        return this.contentService.addContent(body, image);
+        return await this.contentService.addContent(body, image);
     }
 
-    @Post(":id") //edit content
+    @Patch(":id") //edit content
     @UseInterceptors(FileInterceptor('image', multerOptions))
     async editContent(@Param("id") id: string, @Body() body: EditContentDto, @UploadedFile() image: Express.Multer.File){
-        return this.contentService.editContent(id, body, image);
+        return await this.contentService.editContent(id, body, image);
     }
 
     @Get() //get all the contents

@@ -15,15 +15,7 @@ export const ProductSchema = new Schema({
     require: true
   },
   images: [
-    {
-      originalname: { type: String },
-      mimetype: { type: String },
-      path: String,
-      isCoverPhoto: {
-        type: Boolean,
-        default: false
-      }
-    },
+    { type: String },
   ],
   regularPrice: Number,
   salePrice: Number

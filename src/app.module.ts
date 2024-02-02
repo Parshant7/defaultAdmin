@@ -12,6 +12,9 @@ import { ContactModule } from './modules/contact/contact.module';
 import { StaffController } from './modules/staff/staff.controller';
 import { StaffModule } from './modules/staff/staff.module';
 import { NotificationModule } from './modules/notification/notification.module';
+import { APP_FILTER } from '@nestjs/core';
+// import { NotFoundExceptionFilter } from './common/filters/exception.filter';
+import { UploadModule } from './common/modules/upload/upload.module';
 
 @Module({
   imports: [
@@ -36,7 +39,8 @@ import { NotificationModule } from './modules/notification/notification.module';
     FaqModule,
     ContactModule,
     StaffModule,
-    NotificationModule
+    NotificationModule,
+    UploadModule
   ],
   controllers: [],
   providers: [],

@@ -18,17 +18,20 @@ export const multerOptions = {
         }else{
             cb(new HttpException(`Unsupported file type ${extname(file.originalname)}`, HttpStatus.BAD_REQUEST), false);
         }
-    },
-    storage: diskStorage({
-        destination: (req: any, file: any, cb: any)=>{
-            const uploadPath = process.env.UPLOAD_LOCATION;
-            if(!existsSync(uploadPath)) {
-                mkdirSync(uploadPath);
-            }
-            cb(null, uploadPath)
-        },
-        filename: (req:any, file: any, cb:any)=>{
-            cb(null, `${uuid()}${extname(file.originalname)}`)
-        }
-    })
+    }
+    
+    // storage: diskStorage({
+    //     destination: (req: any, file: any, cb: any)=>{
+    //         const uploadPath = process.env.UPLOAD_LOCATION;
+    //         if(!existsSync(uploadPath)) {
+    //             mkdirSync(uploadPath);
+    //         }
+    //         cb(null, uploadPath)
+    //     },
+    //     filename: (req:any, file: any, cb:any)=>{
+    //         cb(null, `${uuid()}${extname(file.originalname)}`)
+    //     }
+    // })
+
+    // storage: multerS3()
 }

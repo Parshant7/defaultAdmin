@@ -1,4 +1,4 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from "@nestjs/common";
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, NotFoundException } from "@nestjs/common";
 import { Request, Response } from "express";
 
 @Catch(HttpException)
@@ -22,3 +22,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
         })
     }
 }
+
+// @Catch(NotFoundException)
+// export class NotFoundExceptionFilter implements ExceptionFilter {
+//     catch(_exception: NotFoundException, host: ArgumentsHost){
+//         const ctx = host.switchToHttp();
+//         const response = ctx.getResponse();
+//         const request = ctx.getRequest();
+
+//         response.status(404)
+//         .json({
+//             statusCode: 404,
+//             timeStamp: new Date().toISOString,
+//             path: request.url,
+//             message: "page not found"
+//         })
+//     }
+// }

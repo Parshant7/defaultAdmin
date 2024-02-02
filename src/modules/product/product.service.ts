@@ -6,35 +6,45 @@ import { AddProductDto } from './dto/add-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { SearchProductDto } from './dto/get-product.dto';
 import { Category } from './enums/category.enum';
+import { UploadService } from 'src/common/modules/upload/upload.service';
+import { array } from 'joi';
 
 @Injectable()
 export class ProductService {
-  constructor(@InjectModel('products') private Product: Model<ProductModel>) {}
+  constructor(@InjectModel('products') private Product: Model<ProductModel>,
+  private readonly uploadService: UploadService
+  ) {}
 
-  async addProduct(payload: AddProductDto, image: any): Promise<ProductModel> {
-    console.log(' payload ', payload, ' image ', image);
-    const product = {
+  async addProduct(payload: AddProductDto, images: any): Promise<ProductModel> {
+    console.log(' payload ', payload, ' image ', images);
+
+    const product: any = {
       productName: payload.productName,
       description: payload.description,
       category: payload.category,
-      images: image,
       regularPrice: payload.regularPrice,
       salePrice: payload.salePrice,
     };
+
+    if(images){
+      const uploadedImages = await this.uploadImages(images);
+      product.images = uploadedImages;
+    }
 
     const newProduct = await this.Product.create(product);
 
     return newProduct;
   }
 
+
   async updateProduct(
     id: string,
     payload: UpdateProductDto,
-    image: any,
+    images: any,
   ): Promise<ProductModel> {
-    console.log(' payload ', payload, ' image', image, 'param ', id);
+    console.log(' payload ', payload, ' images', images, 'param ', id);
 
-    if (!Types.ObjectId.isValid(id)) {
+    if (!isValidObjectId(id)) {
       throw new HttpException('Invalid id', HttpStatus.BAD_REQUEST);
     }
 
@@ -54,16 +64,21 @@ export class ProductService {
       Object.entries(updations).filter(([_, v]) => v != null),
     );
 
-    // const updatedProduct = await this.Product.findByIdAndUpdate(id, updations); // to replace existing images
+    // to update and remove the existing images and 
+    console.log(" removed images ", payload.removeImages);
     let updatedProduct = await this.Product.findByIdAndUpdate(id, {
-      $pull: { images: { _id: { $in: payload.removeImages } } },
-    });
-
-    updatedProduct = await this.Product.findByIdAndUpdate(id, {
       ...updations,
-      $push: { images: image },
-    });
-    // to push and pull images from the existing array;
+      $pull: { images: { $in: payload.removeImages } },
+    }, {new: true});
+
+    // to push images to the existing array;
+    if(images && images.length){
+      const uploadedImages = await this.uploadImages(images);
+      console.log("uploaded images are ", uploadedImages); 
+      updatedProduct = await this.Product.findByIdAndUpdate(id, {
+        $push: { images: uploadedImages },
+      }, {new: true});
+    }
 
     return updatedProduct;
   }
@@ -110,4 +125,20 @@ export class ProductService {
     console.log("product: ",product);
     return product;
   }    
+
+  async uploadImages(images: Express.Multer.File): Promise<string[]>{
+    if(images instanceof Array){
+      const uploadedImages = [];
+
+      for(let i=0; i<images.length; i++){
+        const uploadedImage = await this.uploadService.uploadImage(images[i]);
+        uploadedImages.push(uploadedImage.Location);
+      }
+      return uploadedImages;
+    }
+    else{
+      const uploadedImage = await this.uploadService.uploadImage(images);
+      return uploadedImage.Location;
+    }
+  }
 }

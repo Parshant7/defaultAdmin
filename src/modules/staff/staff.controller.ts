@@ -12,7 +12,8 @@ import { RegisterStaffDto } from 'src/modules/auth/dto/register-staff.dto';
 import { UpdateStaffDto } from 'src/modules/auth/dto/update-staff.dto';
 import { statusDto } from 'src/modules/user/dto/get-status.dto';
 import { SearchDto } from 'src/modules/contact/dto/get-contact-dto';
-import { catchAsync } from 'src/common/decorators/catchAsync.decorator';
+import { UploadService } from 'src/common/modules/upload/upload.service';
+// import { catchAsync } from 'src/common/decorators/catchAsync.decorator';
 
 
 @UseGuards(AuthorizeUser)

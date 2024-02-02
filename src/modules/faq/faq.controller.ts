@@ -31,7 +31,6 @@ export class FaqController {
   }
 
   @Patch(':id') //edit faq by id
-  @UseInterceptors(FileInterceptor('image', multerOptions))
   async editFaq(@Param('id') id: string, @Body() body: EditFaqDto) {
       return this.faqService.editFaq(id, body);
   }

@@ -30,13 +30,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { OtpService } from 'src/common/modules/otp/otp.service';
 import { RegisterStaffDto } from './dto/register-staff.dto';
 import { Role } from 'src/common/enums/role.enum';
+import { UploadService } from 'src/common/modules/upload/upload.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel('users') private User: Model<UserModel>,
     @InjectModel('otps') private Otp: Model<OtpModel>,
-
+    private readonly uploadService: UploadService,
     private readonly mailerService: MailerService,
     private readonly jwtService: JwtService,
     private readonly otpService: OtpService
@@ -71,10 +72,10 @@ export class AuthService {
       
       // if image is uploaded
       if(image){
-        console.log("file exists ", image);
-        newUser.image = image;
-      }
-      
+        const uploadedImage = await this.uploadService.uploadImage(image);
+        console.log(uploadedImage);
+        newUser.image = uploadedImage.Location;
+       }
       // if registering staff
       if (payload instanceof RegisterStaffDto){
         newUser.roles = payload.roles;
@@ -276,7 +277,9 @@ export class AuthService {
     }
 
     if(image){
-      updation.image = image;
+      const uploadedImage = await this.uploadService.uploadImage(image);
+      console.log(uploadedImage);
+      updation.image = uploadedImage.Location;
     }
 
     if(body.email){
@@ -288,7 +291,6 @@ export class AuthService {
       updation.isEmailVerified = false;
     }
 
-
     if(body.phone){
       const isExist = await this.User.findOne({phone: body.phone});
       if(isExist){
@@ -297,6 +299,7 @@ export class AuthService {
       updation.phone = body.phone;
       updation.isPhoneVerified = false;
     }
+
     console.log('this is user', user);
     const updatedUser = await this.User.findByIdAndUpdate(user._id, updation, {new: true});    
 

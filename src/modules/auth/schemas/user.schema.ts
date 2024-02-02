@@ -4,11 +4,7 @@ import { Status } from '../../../common/enums/status.enum';
 import { Role } from 'src/common/enums/role.enum';
 
 export const UserSchema = new Schema({
-  image: {
-      originalname: { type: String },
-      mimetype: { type: String },
-      path: String,
-  },
+  image: { type: String },
   name: String,
   email: { type: String, unique: true },
   phone: { type: String, unique: true},

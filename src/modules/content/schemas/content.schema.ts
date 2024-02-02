@@ -9,9 +9,5 @@ export const ContentSchema = new Schema({
     type: String,
     require: true
   },
-  image: {
-      originalname: { type: String },
-      mimetype: { type: String },
-      path: String,
-  },
+  image: {type: String },
 }).index({ pageTitle: "text", description: "text" });

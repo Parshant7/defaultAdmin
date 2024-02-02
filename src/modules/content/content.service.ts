@@ -5,17 +5,23 @@ import { ContentModel } from 'src/common/models/content.model';
 import { ContentDto } from './dto/add-content.dto';
 import { EditContentDto } from './dto/edit-content.dto';
 import { SearchContentDto } from './dto/get-content.dto';
+import { UploadService } from 'src/common/modules/upload/upload.service';
 
 @Injectable()
 export class ContentService {
-    constructor(@InjectModel('contents') private Content: Model<ContentModel>) {}
+    constructor(@InjectModel('contents') private Content: Model<ContentModel>, private readonly uploadService: UploadService) {}
 
     async addContent(payload: ContentDto, image: any){
-        const content = {
+        const content:any = {
             pageTitle: payload.pageTitle,
             description: payload.description,
-            image: image
         };
+
+        if(image){
+            const uploadedImage = await this.uploadService.uploadImage(image);
+            console.log(uploadedImage);
+            content.image = uploadedImage.Location;
+        }
 
         const newContent = await this.Content.create(content);
         return newContent;
@@ -32,13 +38,17 @@ export class ContentService {
         const updations = {} as any;
 
         if(payload.pageTitle){
-            updations.pageTitle = payload.pageTitle
+            updations.pageTitle = payload.pageTitle;
         }
         if(payload.description){
-            updations.description = payload.description
+            updations.description = payload.description;
         }
-        if(image){
-            updations.image = image;
+
+        console.log(" here is the image ", image);
+        if(image){ 
+            const uploadedImage = await this.uploadService.uploadImage(image);
+            console.log(uploadedImage);
+            updations.image = uploadedImage.Location;
         }
 
         const updatedPage = await this.Content.findByIdAndUpdate(id, updations, {new: true});

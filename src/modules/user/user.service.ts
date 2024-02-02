@@ -8,11 +8,14 @@ import { Type as UserType } from '../../common/enums/userType.enum';
 import { Status as StatusType } from '../../common/enums/status.enum';
 import { statusDto } from './dto/get-status.dto';
 import { idDto } from './dto/user-id.dto';
+import { UploadService } from 'src/common/modules/upload/upload.service';
+
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectModel('users') private User: Model<UserModel>,
+        private readonly uploadService: UploadService
     ){}
     
     async addUser(payload: AddUserDto, image: any) {
@@ -27,14 +30,19 @@ export class UserService {
         }
 
         payload.password = await bcrypt.hash(payload.password, Number(process.env.salt));
-
-        const newUser = {
+        
+        const newUser:any = {
             name: payload.name,
             email: payload.email,
             password: payload.password,
             role: UserType.User,
-            image: image
         };
+
+        if(image){
+            const uploadedImage = await this.uploadService.uploadImage(image);
+            console.log(uploadedImage);
+            newUser.image = uploadedImage.Location;
+        }
 
         const createdUser = await this.User.create(newUser);
         // await this.sendOtp(createdUser.email, OtpType.emailverification);

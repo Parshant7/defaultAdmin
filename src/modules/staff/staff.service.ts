@@ -7,11 +7,13 @@ import { UpdateStaffDto } from 'src/modules/auth/dto/update-staff.dto';
 import { statusDto } from 'src/modules/user/dto/get-status.dto';
 import { SearchDto } from './dto/get-staff-dto';
 import _ from "underscore";
+import { UploadService } from 'src/common/modules/upload/upload.service';
 
 @Injectable()
 export class StaffService {
   constructor(
-    @InjectModel('users') private User: Model<UserModel>
+    @InjectModel('users') private User: Model<UserModel>,
+    private readonly uploadService: UploadService
     ) {}
 
     async updateStaff(id: string, body: UpdateStaffDto, image?: any
@@ -55,8 +57,11 @@ export class StaffService {
       }
 
       //adding profile image
-      if(image)
-        updation.image = image;
+      if(image){
+          const uploadedImage = await this.uploadService.uploadImage(image);
+          console.log(uploadedImage);
+          updation.image = uploadedImage.Location;
+      }
 
       console.log('this is staff', user);
       const updatedStaff = await this.User.findByIdAndUpdate(user._id, updation, {new: true});    

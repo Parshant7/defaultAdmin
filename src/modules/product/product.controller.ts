@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Post, Query, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { AddProductDto } from './dto/add-product.dto';
-import { FilesInterceptor } from "@nestjs/platform-express";
+import { FilesInterceptor, NoFilesInterceptor } from "@nestjs/platform-express";
 import { multerOptions } from 'src/config/multer.config';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { SearchProductDto } from './dto/get-product.dto';

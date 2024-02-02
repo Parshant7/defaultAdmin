@@ -31,7 +31,10 @@ async function bootstrap() {
   });
 
   app.useGlobalPipes(
-    new ValidationPipe(),
+    new ValidationPipe({
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
   );
   
   app.useGlobalFilters(new HttpExceptionFilter());
