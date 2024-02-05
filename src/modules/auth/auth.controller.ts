@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards, Put, Patch, Param, Response, UseInterceptors, Req, UploadedFile } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Put, Patch, Param, Response, UseInterceptors, Req, UploadedFile, Delete } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthorizeUser } from '../../common/guards/auth.guard';
 import { UserModel } from "../../common/models/user.model";
@@ -88,6 +88,12 @@ export class AuthController {
     @Patch('/update_user')
     async updateUser(@User() user: UserModel, @Body() body: UpdateUserDto, @UploadedFile() image: Express.Multer.File) {
       return this.authService.updateUser(user, body, image);
+    }
+
+    @UseGuards(AuthorizeUser)
+    @Delete('/')
+    async deleteUser(@User() user: UserModel) {
+        return this.authService.deleteUser(user);
     }
 
     @UseGuards(AuthorizeUser)
